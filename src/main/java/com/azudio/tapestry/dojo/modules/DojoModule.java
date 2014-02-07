@@ -114,12 +114,9 @@ public class DojoModule {
 
 	private static void printConfigurationMessage() {
 		log.debug("Tapestry Dojo Configuration");
-		log.debug("1. In your AppModule add the DojoModule as a @SubModule(DojoModule.class)");
-		log.debug("2. Create the folder in /WEB-INF/classes/META-INF/assets/dojo");
-		log.debug("3. Create the folder in /WEB-INF/classes/META-INF/modules");
-		log.debug("4. Copy dojo,dijit,dojox,util directories into into the /WEB-INF/classes/META-INF/modules directory");
-		log.debug("5. Copy dojo.js from /WEB-INF/classes/META-INF/modules/dojo into /WEB-INF/classes/META-INF/assets/dojo");
-		log.debug("6. Create a dojoConfig.js file in /WEB-INF/classes/META-INF/assets");
+		log.debug("1. Add the pom to your project");
+		log.debug("2. Download and put dojo under /js/");
+		log.debug("3. Create a dojoConfig.js file in /js/");
 		log.debug("var dojoConfig = {\\R                baseUrl : \"/modules/\",\\R                packages : [ {\\R                    name : \"t5\",\\R                    location : \"/modules/t5\"\\R                }, {\\R                    name : \"underscore\",\\R                    location : \"/modules\",\\R                    main:\"underscore\"\\R                }, {\\R                    name : \"dojo\",\\R                    location : \"/modules/dojo\"\\R                },{\\R                    name : \"dijit\",\\R                    location : \"/modules/dijit\"\\R                }, {\\R                    name : \"util\",\\R                    location : \"/modules/util\"\\R                },{\\R                    name : \"dazole\",\\R                    location : \"/modules/dazole\"\\R                }, {\\R                    name : \"bootstrap\",\\R                    location : \"/modules/bootstrap\"\\R                } ]\\R            };");
 	}
 
