@@ -84,7 +84,7 @@ public class DojoModule {
 			printConfigurationMessage();
 
 			configuration.add("dojoConfig", StackExtension.library("context:js/dojoConfig.js"));
-			configuration.add("dojo", StackExtension.library("classpath:META-INF/assets/dojo/dojo.js"));
+			configuration.add("dojo", StackExtension.library("context:js/dojo/dojo.js"));
 
 			// Add in all the other bits tapestry needs (except require.js)
 
