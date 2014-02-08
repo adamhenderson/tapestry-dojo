@@ -1,7 +1,7 @@
 console.log("tapestry 5 dom");
-requirejs={};
+requirejs = {};
 (function() {
-	define([ "underscore", "./utils", "./events", "dojo/dom", "dojo/_base/event", "dojo/dom-attr", "dojo/query", "dojo/on", "dojo/dom-style","dojo/dom-class", "dojo/dom-construct","dojo/dom-geometry","dojo/NodeList-traverse" ,"dojo/NodeList-manipulate", "dojo/NodeList-data"], function(_, utils, events, dom, event, attr, q, on, style, domClass, domConstruct, domGeom) {
+	define([ "underscore", "./utils", "./events", "dojo/dom", "dojo/_base/event", "dojo/dom-attr", "dojo/query", "dojo/on", "dojo/dom-style", "dojo/dom-class", "dojo/dom-construct", "dojo/dom-geometry", "dojo/request/xhr", "dojo/NodeList-traverse", "dojo/NodeList-manipulate", "dojo/NodeList-data" ], function(_, utils, events, dom, event, attr, q, on, style, domClass, domConstruct, domGeom, xhr) {
 
 		var ElementWrapper = null, EventWrapper = null, RequestWrapper = null, ResponseWrapper = null, activeAjaxCount, adjustAjaxCount, ajaxRequest, convertContent, createElement, exports = null, onevent, scanner, scanners, wrapElement;
 
@@ -39,12 +39,15 @@ requirejs={};
 
 		})();
 		onevent = function(jqueryObject, eventNames, match, handler) {
+			console.debug("onevent", arguments);
+			debugger;
 			var wrapped;
 
 			if (handler == null) {
 				throw new Error("No event handler was provided.");
 			}
 			wrapped = function(jqueryEvent, memo) {
+				console.debug(arguments);
 				var elementWrapper, eventWrapper, result;
 
 				elementWrapper = new ElementWrapper(q(jqueryEvent.target));
@@ -55,6 +58,7 @@ requirejs={};
 				}
 			};
 			jqueryObject.on(eventNames, match, wrapped);
+			console.debug("done");
 		};
 		ElementWrapper = (function() {
 			function ElementWrapper(ele) {
@@ -69,20 +73,24 @@ requirejs={};
 			};
 
 			ElementWrapper.prototype.hide = function() {
-				style.set(this.element,{display:"none"});
+				style.set(this.element, {
+					display : "none"
+				});
 				return this;
 			};
 
 			ElementWrapper.prototype.show = function() {
-				style.set(this.element,{display:""});
+				style.set(this.element, {
+					display : ""
+				});
 				return this;
 			};
 
 			ElementWrapper.prototype.css = function(name, value) {
 				if (arguments.length === 1) {
-					return domClass.contains(this.element,name);
+					return domClass.contains(this.element, name);
 				}
-				domClass.set(this.element,name, value);
+				domClass.set(this.element, name, value);
 				return this;
 			};
 
@@ -96,7 +104,7 @@ requirejs={};
 			};
 
 			ElementWrapper.prototype.attr = function(name, value) {
-				
+
 				var attributeName = 0, current;
 
 				if (_.isObject(name)) {
@@ -126,52 +134,52 @@ requirejs={};
 			};
 
 			ElementWrapper.prototype.hasClass = function(name) {
-				return domClass.has(this.element,name);
+				return domClass.has(this.element, name);
 			};
 
 			ElementWrapper.prototype.removeClass = function(name) {
-				domClass.remove(this.element,name);
+				domClass.remove(this.element, name);
 				return this;
 			};
 
 			ElementWrapper.prototype.addClass = function(name) {
-				domClass.add(this.element,name);
+				domClass.add(this.element, name);
 				return this;
 			};
 
 			ElementWrapper.prototype.update = function(content) {
 				domConstruct.empty(this.element);
 				if (content) {
-					domConstruct.place(convertContent(content),this.element);
+					domConstruct.place(convertContent(content), this.element);
 				}
 				return this;
 			};
 
 			ElementWrapper.prototype.append = function(content) {
-				domConstruct.place(convertContent(content),this.element);
+				domConstruct.place(convertContent(content), this.element);
 				return this;
 			};
 
 			ElementWrapper.prototype.prepend = function(content) {
-				domConstruct.place(convertContent(content),this.element,"first");
+				domConstruct.place(convertContent(content), this.element, "first");
 				return this;
 			};
 
 			ElementWrapper.prototype.insertBefore = function(content) {
-				domConstruct.place(convertContent(content),this.element,"before");
+				domConstruct.place(convertContent(content), this.element, "before");
 				return this;
 			};
 
 			ElementWrapper.prototype.insertAfter = function(content) {
-				domConstruct.place(convertContent(content),this.element,"after");
+				domConstruct.place(convertContent(content), this.element, "after");
 				return this;
 			};
 
 			ElementWrapper.prototype.findFirst = function(selector) {
 				var match;
 
-				match = q(this.element,selector);
-				
+				match = q(this.element, selector);
+
 				if (match.length) {
 					return new ElementWrapper(match.first());
 				} else {
@@ -182,7 +190,7 @@ requirejs={};
 			ElementWrapper.prototype.find = function(selector) {
 				var i, matches, _i, _ref, _results;
 
-				matches = q(this.element,selector);
+				matches = q(this.element, selector);
 				_results = [];
 				for (i = _i = 0, _ref = matches.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
 					_results.push(new ElementWrapper(matches.eq(i)));
@@ -236,7 +244,7 @@ requirejs={};
 			};
 
 			ElementWrapper.prototype.visible = function() {
-				return style.get(this.element,"display") !== "none";
+				return style.get(this.element, "display") !== "none";
 			};
 
 			ElementWrapper.prototype.deepVisible = function() {
@@ -264,18 +272,18 @@ requirejs={};
 				if (!((_.isNull(memo)) || (_.isObject(memo)) || (_.isUndefined(memo)))) {
 					throw new Error("Event memo may be null or an object, but not a simple type.");
 				}
-				
+
 				// Send event
-			    event = on.emit(this.element, eventName, {
-			        bubbles: true,
-			        cancelable: true
-			    });
-			    
-			    return event;
-			    
-//				jqEvent = $.Event(eventName);
-//				this.$.trigger(jqEvent, memo);
-//				return !jqEvent.isImmediatePropagationStopped();
+				event = on.emit(this.element, eventName, {
+					bubbles : true,
+					cancelable : true
+				});
+
+				return event;
+
+				// jqEvent = $.Event(eventName);
+				// this.$.trigger(jqEvent, memo);
+				// return !jqEvent.isImmediatePropagationStopped();
 			};
 
 			ElementWrapper.prototype.value = function(newValue) {
@@ -314,78 +322,86 @@ requirejs={};
 			return ElementWrapper;
 
 		})();
-//		RequestWrapper = (function() {
-//			function RequestWrapper(jqxhr) {
-//				this.jqxhr = jqxhr;
-//			}
-//
-//			RequestWrapper.prototype.abort = function() {
-//				return this.jqxhr.abort();
-//			};
-//
-//			return RequestWrapper;
-//
-//		})();
-//		ResponseWrapper = (function() {
-//			function ResponseWrapper(jqxhr, data) {
-//				this.jqxhr = jqxhr;
-//				this.status = jqxhr.status;
-//				this.statusText = jqxhr.statusText;
-//				this.json = data;
-//				this.text = jqxhr.responseText;
-//			}
-//
-//			ResponseWrapper.prototype.header = function(name) {
-//				return this.jqxhr.getResponseHeader(name);
-//			};
-//
-//			return ResponseWrapper;
-//
-//		})();
+		RequestWrapper = (function() {
+			function RequestWrapper(x) {
+				this.x = x;
+			}
+
+			RequestWrapper.prototype.abort = function() {
+				return this.x.abort();
+			};
+
+			return RequestWrapper;
+
+		})();
+		ResponseWrapper = (function() {
+			function ResponseWrapper(x, data) {
+				this.x = x;
+				this.status = x.status;
+				this.statusText = x.statusText;
+				this.json = data;
+				this.text = x.responseText;
+			}
+
+			ResponseWrapper.prototype.header = function(name) {
+				return this.x.getResponseHeader(name);
+			};
+
+			return ResponseWrapper;
+
+		})();
 		activeAjaxCount = 0;
 		adjustAjaxCount = function(delta) {
 			activeAjaxCount += delta;
 			return exports.body.attr("data-ajax-active", activeAjaxCount > 0);
 		};
-//		ajaxRequest = function(url, options) {
-//			var jqxhr, _ref;
-//
-//			if (options == null) {
-//				options = {};
-//			}
-//			jqxhr = $.ajax({
-//				url : url,
-//				type : ((_ref = options.method) != null ? _ref.toUpperCase() : void 0) || "POST",
-//				contentType : options.contentType,
-//				traditional : true,
-//				data : options.data,
-//				error : function(jqXHR, textStatus, errorThrown) {
-//					var message, text;
-//
-//					adjustAjaxCount(-1);
-//					if (textStatus === "abort") {
-//						return;
-//					}
-//					message = "Request to " + url + " failed with status " + textStatus;
-//					text = jqXHR.statusText;
-//					if (!_.isEmpty(text)) {
-//						message += " -- " + text;
-//					}
-//					message += ".";
-//					if (options.failure) {
-//						options.failure(new ResponseWrapper(jqXHR), message);
-//					} else {
-//						throw new Error(message);
-//					}
-//				},
-//				success : function(data, textStatus, jqXHR) {
-//					adjustAjaxCount(-1);
-//					options.success && options.success(new ResponseWrapper(jqXHR, data));
-//				}
-//			});
-//			adjustAjaxCount(+1);
-//			return new RequestWrapper(jqxhr);
-//		};
+		ajaxRequest = function(url, options) {
+			console.debug("ajaxRequest", arguments);
+			debugger;
+			var x, _ref;
+
+			if (options == null) {
+				options = {};
+			}
+
+			x = xhr(url, {
+				method : ((_ref = options.method) != null ? _ref.toUpperCase() : void 0) || "POST",
+				headers : {
+					'Content-Type' : options.contentType
+				},
+				data : options.data
+			}).then(function(data) {
+
+				adjustAjaxCount(-1);
+				options.success && options.success(new ResponseWrapper(jqXHR, data));
+
+			}, function(err) {
+
+				alert("AN ERROR HAS OCCURRED!!!!");
+
+				var message, text;
+
+				adjustAjaxCount(-1);
+				if (textStatus === "abort") {
+					return;
+				}
+				message = "Request to " + url + " failed with status " + textStatus;
+				text = jqXHR.statusText;
+				if (!_.isEmpty(text)) {
+					message += " -- " + text;
+				}
+				message += ".";
+				if (options.failure) {
+					options.failure(new ResponseWrapper(jqXHR), message);
+				} else {
+					throw new Error(message);
+				}
+
+			});
+
+			adjustAjaxCount(+1);
+			return new RequestWrapper(x);
+		};
 		scanners = null;
 		scanner = function(selector, callback) {
 			var scan;
@@ -451,7 +467,7 @@ requirejs={};
 		_.extend(exports, {
 			wrap : wrapElement,
 			create : createElement,
-			//ajaxRequest : ajaxRequest,
+			// ajaxRequest : ajaxRequest,
 			on : function(selector, events, match, handler) {
 				var elements;
 
