@@ -22,7 +22,7 @@ The project is built to become a Tapestry Library that you can eventually just p
     ```java
     @Contribute(SymbolProvider.class)
 	@ApplicationDefaults
-	public static void setHMAC(MappedConfiguration<String, Object> configuration) {
+	public static void setDefaults(MappedConfiguration<String, Object> configuration) {
 		configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "dojo");
 	}
     ```
@@ -50,5 +50,3 @@ var dojoConfig = {
 	    ]
     };
     ```
-
-A 
