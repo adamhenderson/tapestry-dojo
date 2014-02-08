@@ -50,6 +50,7 @@ var dojoConfig = {
 	    ]
     };
     ```
+
 Your application should at least start up ok.
 
 ##Things Still To Do
