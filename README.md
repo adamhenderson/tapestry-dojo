@@ -54,6 +54,6 @@ var dojoConfig = {
 Your application should at least start up ok.
 
 ##Things Still To Do
-1. The ModuleMamager still seems to want to configure RequireJS through a: var require object
+1. The ModuleManager still seems to want to configure RequireJS through a 'var require = {...}' object
 2. The dojo implementation of dom module is incomplete
 3. ... and loads more!
