@@ -81,8 +81,6 @@ public class DojoModule {
 		log.debug("Provider:" + provider);
 		if (provider.equals("dojo")) {
 
-			printConfigurationMessage();
-
 			configuration.add("dojoConfig", StackExtension.library("context:js/dojoConfig.js"));
 			configuration.add("dojo", StackExtension.library("context:js/dojo/dojo.js"));
 
@@ -93,9 +91,9 @@ public class DojoModule {
 			configuration.add("underscore-library", StackExtension.library(ROOT + "/underscore-1.5.2.js"));
 			configuration.add("underscore-module", StackExtension.module("underscore"));
 
-			configuration.add("jquery-library", StackExtension.library(ROOT + "/jquery-1.10.2.js"));
-			configuration.add("jquery-noconflict", StackExtension.library(ROOT + "/jquery-noconflict.js"));
-			add(configuration, StackExtensionType.MODULE, "jquery");
+			// configuration.add("jquery-library", StackExtension.library(ROOT + "/jquery-1.10.2.js"));
+			// configuration.add("jquery-noconflict", StackExtension.library(ROOT + "/jquery-noconflict.js"));
+			// add(configuration, StackExtensionType.MODULE, "jquery");
 
 			add(configuration, StackExtensionType.STYLESHEET, "${" + SymbolConstants.BOOTSTRAP_ROOT + "}/css/bootstrap.css");
 			// ,
@@ -110,14 +108,6 @@ public class DojoModule {
 			// );
 			log.debug("Contributions made to 'DojoJavaScriptStack'");
 		}
-	}
-
-	private static void printConfigurationMessage() {
-		log.debug("Tapestry Dojo Configuration");
-		log.debug("1. Add the pom to your project");
-		log.debug("2. Download and put dojo under /js/");
-		log.debug("3. Create a dojoConfig.js file in /js/");
-		log.debug("var dojoConfig = {\\R                baseUrl : \"/modules/\",\\R                packages : [ {\\R                    name : \"t5\",\\R                    location : \"/modules/t5\"\\R                }, {\\R                    name : \"underscore\",\\R                    location : \"/modules\",\\R                    main:\"underscore\"\\R                }, {\\R                    name : \"dojo\",\\R                    location : \"/modules/dojo\"\\R                },{\\R                    name : \"dijit\",\\R                    location : \"/modules/dijit\"\\R                }, {\\R                    name : \"util\",\\R                    location : \"/modules/util\"\\R                },{\\R                    name : \"dazole\",\\R                    location : \"/modules/dazole\"\\R                }, {\\R                    name : \"bootstrap\",\\R                    location : \"/modules/bootstrap\"\\R                } ]\\R            };");
 	}
 
 	private static void add(OrderedConfiguration<StackExtension> configuration, StackExtensionType type, String... paths) {
@@ -156,4 +146,5 @@ public class DojoModule {
 			log.debug("Contributions made to the modulemanager");
 		}
 	}
+
 }

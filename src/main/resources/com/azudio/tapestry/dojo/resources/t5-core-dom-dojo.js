@@ -19,6 +19,9 @@ requirejs = {};
 		};
 		EventWrapper = (function() {
 			function EventWrapper(event, memo) {
+
+				// console.log(event.memo);
+
 				var name, _i, _len, _ref;
 
 				this.nativeEvent = event;
@@ -38,26 +41,44 @@ requirejs = {};
 			return EventWrapper;
 
 		})();
-		onevent = function(jqueryObject, eventNames, match, handler) {
+		onevent = function(elements, eventNames, match, handler) {
+			// debugger;
 			console.debug("onevent", arguments);
-			debugger;
-			var wrapped;
-
 			if (handler == null) {
 				throw new Error("No event handler was provided.");
 			}
-			wrapped = function(jqueryEvent, memo) {
+			console.debug(handler.toString());
+			var wrapped = function(e, memo) {
+				console.debug("wrapped called");
 				console.debug(arguments);
-				var elementWrapper, eventWrapper, result;
 
-				elementWrapper = new ElementWrapper(q(jqueryEvent.target));
-				eventWrapper = new EventWrapper(jqueryEvent, memo);
+				var elementWrapper, eventWrapper, result;
+				elementWrapper = new ElementWrapper(e.target);
+				eventWrapper = new EventWrapper(e, memo);
+
+				// console.debug(handler.toString());
+
 				result = handler.call(elementWrapper, eventWrapper, memo);
 				if (result === false) {
 					eventWrapper.stop();
 				}
-			};
-			jqueryObject.on(eventNames, match, wrapped);
+			}
+
+			var matchers = (match == null ? [] : match.split(","));
+			var eventNamesArr = eventNames.split(" ");
+
+			for (i = 0; i < eventNamesArr.length; i++) {
+				var eventName = eventNamesArr[i].trim();
+				for (j = 0; j < matchers.length; j++) {
+					var match = matchers[j].trim();
+					console.debug(elements, match + ":" + eventName);
+					q(elements).on(match + ":" + eventName, wrapped);
+				}
+				if (matchers.length == 0) {
+					q(elements).on(eventName, wrapped);
+				}
+			}
+
 			console.debug("done");
 		};
 		ElementWrapper = (function() {
@@ -73,6 +94,7 @@ requirejs = {};
 			};
 
 			ElementWrapper.prototype.hide = function() {
+
 				style.set(this.element, {
 					display : "none"
 				});
@@ -201,7 +223,7 @@ requirejs = {};
 			ElementWrapper.prototype.findParent = function(selector) {
 				var parents;
 
-				parents = this.$.parents(selector);
+				parents = q(this.element).parents(selector);
 				if (!parents.length) {
 					return null;
 				}
@@ -248,9 +270,7 @@ requirejs = {};
 			};
 
 			ElementWrapper.prototype.deepVisible = function() {
-				var cursor;
-
-				cursor = this;
+				var cursor = this;
 				while (cursor) {
 					if (!cursor.visible()) {
 						return false;
@@ -264,6 +284,7 @@ requirejs = {};
 			};
 
 			ElementWrapper.prototype.trigger = function(eventName, memo) {
+
 				var event;
 
 				if (eventName == null) {
@@ -273,17 +294,14 @@ requirejs = {};
 					throw new Error("Event memo may be null or an object, but not a simple type.");
 				}
 
+				memo.bubbles = true;
+				memo.cancelable = true;
+
 				// Send event
-				event = on.emit(this.element, eventName, {
-					bubbles : true,
-					cancelable : true
-				});
+				event = on.emit(this.element, eventName, memo);
 
 				return event;
 
-				// jqEvent = $.Event(eventName);
-				// this.$.trigger(jqEvent, memo);
-				// return !jqEvent.isImmediatePropagationStopped();
 			};
 
 			ElementWrapper.prototype.value = function(newValue) {
@@ -350,14 +368,17 @@ requirejs = {};
 			return ResponseWrapper;
 
 		})();
+
 		activeAjaxCount = 0;
+
 		adjustAjaxCount = function(delta) {
 			activeAjaxCount += delta;
 			return exports.body.attr("data-ajax-active", activeAjaxCount > 0);
 		};
+
 		ajaxRequest = function(url, options) {
 			console.debug("ajaxRequest", arguments);
-			debugger;
+
 			var x, _ref;
 
 			if (options == null) {
@@ -371,10 +392,10 @@ requirejs = {};
 				},
 				data : options.data
 			}).then(function(data) {
+				console.debug("Returned data:", data);
 
 				adjustAjaxCount(-1);
-				options.success && options.success(new ResponseWrapper(jqXHR, data));
-
+				options.success && options.success(new ResponseWrapper(x, data));
 			}, function(err) {
 
 				alert("AN ERROR HAS OCCURRED!!!!");
@@ -385,14 +406,14 @@ requirejs = {};
 				if (textStatus === "abort") {
 					return;
 				}
-				message = "Request to " + url + " failed with status " + textStatus;
-				text = jqXHR.statusText;
+				message = "Request to " + err.url + " failed with status " + err.textStatus;
+				text = err.statusText;
 				if (!_.isEmpty(text)) {
 					message += " -- " + text;
 				}
 				message += ".";
 				if (options.failure) {
-					options.failure(new ResponseWrapper(jqXHR), message);
+					options.failure(new ResponseWrapper(x), message);
 				} else {
 					throw new Error(message);
 				}
@@ -429,6 +450,7 @@ requirejs = {};
 			}
 			scanners.push(scan);
 		};
+
 		exports = wrapElement = function(element) {
 			if (_.isString(element)) {
 				element = document.getElementById(element);
@@ -441,7 +463,9 @@ requirejs = {};
 				}
 			}
 			return new ElementWrapper(dom.byId(element));
+
 		};
+
 		createElement = function(elementName, attributes, body) {
 			var element;
 
@@ -467,15 +491,14 @@ requirejs = {};
 		_.extend(exports, {
 			wrap : wrapElement,
 			create : createElement,
-			// ajaxRequest : ajaxRequest,
+			ajaxRequest : ajaxRequest,
 			on : function(selector, events, match, handler) {
-				var elements;
 
 				if (handler == null) {
 					handler = match;
 					match = null;
 				}
-				elements = q(selector);
+				var elements = q(selector);
 				onevent(elements, events, match, handler);
 			},
 			onDocument : function(events, match, handler) {
@@ -484,6 +507,7 @@ requirejs = {};
 			body : wrapElement(document.body),
 			scanner : scanner
 		});
+
 		return exports;
 	});
 
