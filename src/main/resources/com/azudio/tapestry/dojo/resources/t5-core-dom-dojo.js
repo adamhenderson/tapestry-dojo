@@ -20,7 +20,7 @@ requirejs = {};
 		EventWrapper = (function() {
 			function EventWrapper(event, memo) {
 
-				// console.log(event.memo);
+
 
 				var name, _i, _len, _ref;
 
@@ -42,12 +42,15 @@ requirejs = {};
 
 		})();
 		onevent = function(elements, eventNames, match, handler) {
-			// debugger;
-			console.debug("onevent", arguments);
+
+			console.debug("onevent start:", elements, eventNames, match, handler);
+			
 			if (handler == null) {
 				throw new Error("No event handler was provided.");
 			}
-			console.debug(handler.toString());
+			
+			console.debug("Handler to register:" + handler.toString());
+			
 			var wrapped = function(e, memo) {
 				console.debug("wrapped called");
 				console.debug(arguments);
@@ -55,10 +58,9 @@ requirejs = {};
 				var elementWrapper, eventWrapper, result;
 				elementWrapper = new ElementWrapper(e.target);
 				eventWrapper = new EventWrapper(e, memo);
-
-				// console.debug(handler.toString());
-
+				
 				result = handler.call(elementWrapper, eventWrapper, memo);
+				
 				if (result === false) {
 					eventWrapper.stop();
 				}
@@ -79,7 +81,7 @@ requirejs = {};
 				}
 			}
 
-			console.debug("done");
+			console.debug("finished registering onevent");
 		};
 		ElementWrapper = (function() {
 			function ElementWrapper(ele) {
@@ -169,16 +171,34 @@ requirejs = {};
 				return this;
 			};
 
+			// ElementWrapper.prototype.update = function(content) {
+			// this.element.update(content && convertContent(content));
+			// return this;
+			// };
+			//
+			// ElementWrapper.prototype.append = function(content) {
+			// this.element.insert({
+			// bottom : convertContent(content)
+			// });
+			// return this;
+			// };
+
 			ElementWrapper.prototype.update = function(content) {
+
 				domConstruct.empty(this.element);
 				if (content) {
-					domConstruct.place(convertContent(content), this.element);
+					var c = convertContent(content);
+
+					domConstruct.place(c, this.element);
 				}
 				return this;
 			};
 
 			ElementWrapper.prototype.append = function(content) {
-				domConstruct.place(convertContent(content), this.element);
+
+				var c = convertContent(content);
+
+				domConstruct.place(c, this.element);
 				return this;
 			};
 
@@ -390,6 +410,7 @@ requirejs = {};
 				headers : {
 					'Content-Type' : options.contentType
 				},
+				handleAs : "json",
 				data : options.data
 			}).then(function(data) {
 				console.debug("Returned data:", data);
@@ -397,8 +418,6 @@ requirejs = {};
 				adjustAjaxCount(-1);
 				options.success && options.success(new ResponseWrapper(x, data));
 			}, function(err) {
-
-				alert("AN ERROR HAS OCCURRED!!!!");
 
 				var message, text;
 
@@ -467,6 +486,7 @@ requirejs = {};
 		};
 
 		createElement = function(elementName, attributes, body) {
+
 			var element;
 
 			if (_.isObject(elementName)) {
