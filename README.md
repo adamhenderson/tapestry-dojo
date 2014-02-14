@@ -64,7 +64,7 @@ DOM events work:
 dom.onDocument("click","button",function(){...});
 ```
 
-Custom events don't: 
+Custom events should also now work but the event names have been overridden with the colons replaces with slashes (as they are not allowed in dojo custom event names): 
 
 ```javascript
 dom.onDocument(events.zone.refresh, function(event) {...});
