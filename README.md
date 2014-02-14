@@ -64,9 +64,11 @@ dom.onDocument("click","button",function(){...});
     ```
     Custom events don't: 
     ```javascript
-dom.onDocument(events.zone.refresh, function(event) {}); - this is because dojo treats the parameter
+dom.onDocument(events.zone.refresh, function(event) {});
     ```
-Ajax call can be made
+     this is because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events "t5:zone:update".
+    
+Ajax call can be made:
     ```javascript
 dom.wrap("button1").on("click", null, function() {
     dom.ajaxRequest("/domtest:getdata", {
