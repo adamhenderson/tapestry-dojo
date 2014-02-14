@@ -54,22 +54,26 @@ var dojoConfig = {
 Your application should at least start up ok.
 
 ##Things That Work
-1. The dojo implementation of dom module is slowly getting there; 
-ElementWrapper methods work
+### Events
+
 Event registration works (partially)
 
-    DOM events work:
-    ```javascript
+DOM events work:
+
+```javascript
 dom.onDocument("click","button",function(){...});
-    ```
-    Custom events don't: 
-    ```javascript
-dom.onDocument(events.zone.refresh, function(event) {});
-    ```
-     this is because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events "t5:zone:update".
-    
-Ajax call can be made:
-    ```javascript
+```
+
+Custom events don't: 
+
+```javascript
+dom.onDocument(events.zone.refresh, function(event) {...});
+```
+
+This is because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events "t5:zone:update".
+
+###Ajax
+```javascript
 dom.wrap("button1").on("click", null, function() {
     dom.ajaxRequest("/domtest:getdata", {
         success : function(rw, memo) {
@@ -80,7 +84,14 @@ dom.wrap("button1").on("click", null, function() {
         }
     });
 });
-    ```
+```
 
-##Things Still To Do
-1. The ModuleManager still seems to want to configure RequireJS through a 'var require = {...}' object
+####Zones
+Zones currently don't work as they rely on the custom events being fired, until this is fixed they will continue to be broken. Tests have shown that if the event names are changed so that the colons are replaced with underscores '_' or slashes '/' the events will fire.
+
+###ElementWrapper
+All the ElementWrapper methods all work as expected.
+
+##Things Still To Do / Broken
+1. The ModuleManager still seems to want to configure RequireJS through a 'var require = {...}' object - this object could be useful for configuring dojo is the 'require' variable could be changed to 'dojoConfig' and more control given to what goes into it.
+2. Something is attempting to load up some of the bootstrap modules that has a requirement for jQuery, since the replaced core stact does not include jQuery it is failing so would like to find that code and disable it.
