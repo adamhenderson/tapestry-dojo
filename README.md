@@ -56,7 +56,7 @@ Your application should at least start up ok.
 ##Things That Work
 ### Events
 
-Event registration works (partially)
+Event registration works
 
 DOM events work:
 
@@ -70,7 +70,7 @@ Custom events should also now work but the event names have been overridden with
 dom.onDocument(events.zone.refresh, function(event) {...});
 ```
 
-This is because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events "t5:zone:update".
+This is because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events "t5:zone:update", so a new events.js module is supplied with slash separated event names: "t5/zone/update".
 
 ###Ajax
 ```javascript
