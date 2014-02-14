@@ -87,7 +87,7 @@ dom.wrap("button1").on("click", null, function() {
 ```
 
 ####Zones
-Zones currently don't work as they rely on the custom events being fired, until this is fixed they will continue to be broken. Tests have shown that if the event names are changed so that the colons are replaced with underscores '_' or slashes '/' the events will fire.
+Zones should now work.
 
 ###ElementWrapper
 All the ElementWrapper methods all work as expected.
