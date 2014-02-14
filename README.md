@@ -53,7 +53,32 @@ var dojoConfig = {
 
 Your application should at least start up ok.
 
+##Things That Work
+1. The dojo implementation of dom module is slowly getting there; 
+ElementWrapper methods work
+Event registration works (partially)
+
+    DOM events work:
+    ```javascript
+dom.onDocument("click","button",function(){...});
+    ```
+    Custom events don't: 
+    ```javascript
+dom.onDocument(events.zone.refresh, function(event) {}); - this is because dojo treats the parameter
+    ```
+Ajax call can be made
+    ```javascript
+dom.wrap("button1").on("click", null, function() {
+    dom.ajaxRequest("/domtest:getdata", {
+        success : function(rw, memo) {
+            var d = dom.create("div", {
+                innerHTML : "<em>" + rw.json.date + "</em>"
+            });
+            responses.prepend(d);
+        }
+    });
+});
+    ```
+
 ##Things Still To Do
 1. The ModuleManager still seems to want to configure RequireJS through a 'var require = {...}' object
-2. The dojo implementation of dom module is incomplete
-3. ... and loads more!
