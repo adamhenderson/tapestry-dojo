@@ -1,13 +1,13 @@
 console.log("tapestry 5 dom");
 requirejs = {};
 (function() {
-	define([ "underscore", "./utils", "./events", "dojo/dom", "dojo/_base/event", "dojo/dom-attr", "dojo/query", "dojo/on", "dojo/dom-style", "dojo/dom-class", "dojo/dom-construct", "dojo/dom-geometry", "dojo/request/xhr", "dojo/NodeList-traverse", "dojo/NodeList-manipulate", "dojo/NodeList-data" ], function(_, utils, events, dom, event, attr, q, on, style, domClass, domConstruct, domGeom, xhr) {
+	define([ "underscore", "./utils", "./events", "dojo/dom", "dojo/_base/event", "dojo/dom-attr", "dojo/query", "dojo/on", "dojo/dom-style", "dojo/dom-class", "dojo/dom-construct", "dojo/dom-geometry", "dojo/request/xhr", "dojo/html", "dojo/NodeList-traverse", "dojo/NodeList-manipulate", "dojo/NodeList-data" ], function(_, utils, events, dom, event, attr, q, on, style, domClass, domConstruct, domGeom, xhr, html) {
 
 		var ElementWrapper = null, EventWrapper = null, RequestWrapper = null, ResponseWrapper = null, activeAjaxCount, adjustAjaxCount, ajaxRequest, convertContent, createElement, exports = null, onevent, scanner, scanners, wrapElement;
 
 		convertContent = function(content) {
 			if (_.isString(content)) {
-				return content;
+				return document.createTextNode(content);
 			}
 			if (_.isElement(content)) {
 				return content;
@@ -19,13 +19,10 @@ requirejs = {};
 		};
 		EventWrapper = (function() {
 			function EventWrapper(event, memo) {
-
-
-
 				var name, _i, _len, _ref;
 
 				this.nativeEvent = event;
-				this.memo = memo;
+				this.memo = event.memo;
 				_ref = [ "type", "char", "key" ];
 				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 					name = _ref[_i];
@@ -43,24 +40,23 @@ requirejs = {};
 		})();
 		onevent = function(elements, eventNames, match, handler) {
 
-			console.debug("onevent start:", elements, eventNames, match, handler);
-			
 			if (handler == null) {
 				throw new Error("No event handler was provided.");
 			}
-			
-			console.debug("Handler to register:" + handler.toString());
-			
-			var wrapped = function(e, memo) {
-				console.debug("wrapped called");
-				console.debug(arguments);
+
+			// console.debug("Handler to register:" + handler.toString());
+
+			var wrapped = function(e) {
+
+				// console.debug("wrapped called");
+				// console.debug(arguments);
 
 				var elementWrapper, eventWrapper, result;
 				elementWrapper = new ElementWrapper(e.target);
-				eventWrapper = new EventWrapper(e, memo);
-				
-				result = handler.call(elementWrapper, eventWrapper, memo);
-				
+				eventWrapper = new EventWrapper(e, e.memo);
+
+				result = handler.call(elementWrapper, eventWrapper, e.memo);
+
 				if (result === false) {
 					eventWrapper.stop();
 				}
@@ -71,12 +67,14 @@ requirejs = {};
 
 			for (i = 0; i < eventNamesArr.length; i++) {
 				var eventName = eventNamesArr[i].trim();
+
 				for (j = 0; j < matchers.length; j++) {
 					var match = matchers[j].trim();
-					console.debug(elements, match + ":" + eventName);
+					console.debug("Registering event:", elements, match + ":" + eventName);
 					q(elements).on(match + ":" + eventName, wrapped);
 				}
 				if (matchers.length == 0) {
+					console.debug("Registering event:", elements, eventName);
 					q(elements).on(eventName, wrapped);
 				}
 			}
@@ -170,18 +168,6 @@ requirejs = {};
 				domClass.add(this.element, name);
 				return this;
 			};
-
-			// ElementWrapper.prototype.update = function(content) {
-			// this.element.update(content && convertContent(content));
-			// return this;
-			// };
-			//
-			// ElementWrapper.prototype.append = function(content) {
-			// this.element.insert({
-			// bottom : convertContent(content)
-			// });
-			// return this;
-			// };
 
 			ElementWrapper.prototype.update = function(content) {
 
@@ -314,11 +300,15 @@ requirejs = {};
 					throw new Error("Event memo may be null or an object, but not a simple type.");
 				}
 
-				memo.bubbles = true;
-				memo.cancelable = true;
+				var h = {
+					bubbles : true,
+					cancelable : true,
+					memo : memo
+
+				};
 
 				// Send event
-				event = on.emit(this.element, eventName, memo);
+				event = on.emit(this.element, eventName, h);
 
 				return event;
 
@@ -339,12 +329,14 @@ requirejs = {};
 			};
 
 			ElementWrapper.prototype.meta = function(name, value) {
+			
 				var current;
 
-				current = q(this.element).data(name);
+				current = attr.get(this.element, name);
 				if (arguments.length > 1) {
-					q(this.elment).data(name, value);
+					attr.set(this.element, name, value);
 				}
+
 				return current;
 			};
 
@@ -397,7 +389,7 @@ requirejs = {};
 		};
 
 		ajaxRequest = function(url, options) {
-			console.debug("ajaxRequest", arguments);
+			// console.debug("ajaxRequest", arguments);
 
 			var x, _ref;
 
@@ -522,6 +514,7 @@ requirejs = {};
 				onevent(elements, events, match, handler);
 			},
 			onDocument : function(events, match, handler) {
+
 				return exports.on(document, events, match, handler);
 			},
 			body : wrapElement(document.body),

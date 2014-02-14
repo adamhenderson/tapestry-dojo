@@ -139,10 +139,11 @@ public class DojoModule {
 	 */
 	@Contribute(ModuleManager.class)
 	@Match("DojoModuleManager")
-	public static void setupFoundationFramework(MappedConfiguration<String, JavaScriptModuleConfiguration> configuration, @Symbol(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER) String provider, @Path("classpath:com/azudio/tapestry/dojo/resources/t5-core-dom-dojo.js") Resource domDojo) {
+	public static void setupFoundationFramework(MappedConfiguration<String, JavaScriptModuleConfiguration> configuration, @Symbol(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER) String provider, @Path("classpath:com/azudio/tapestry/dojo/resources/t5-core-dom-dojo.js") Resource domDojo, @Path("classpath:com/azudio/tapestry/dojo/resources/events.js") Resource events) {
 		log.debug("Provider:" + provider);
 		if (provider.equals("dojo")) {
 			configuration.add("t5/core/dom", new JavaScriptModuleConfiguration(domDojo));
+			configuration.add("t5/core/events", new JavaScriptModuleConfiguration(events));
 			log.debug("Contributions made to the modulemanager");
 		}
 	}
