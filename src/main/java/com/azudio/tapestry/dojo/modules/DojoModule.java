@@ -95,17 +95,18 @@ public class DojoModule {
 			// configuration.add("jquery-noconflict", StackExtension.library(ROOT + "/jquery-noconflict.js"));
 			// add(configuration, StackExtensionType.MODULE, "jquery");
 
-			add(configuration, StackExtensionType.STYLESHEET, "${" + SymbolConstants.BOOTSTRAP_ROOT + "}/css/bootstrap.css");
-			// ,
-			//
-			// ROOT + "/tapestry.css",
-			//
-			// ROOT + "/exception-frame.css",
-			//
-			// ROOT + "/tapestry-console.css",
-			//
-			// ROOT + "/tree.css"
-			// );
+			add(configuration, StackExtensionType.STYLESHEET,
+
+			"${" + SymbolConstants.BOOTSTRAP_ROOT + "}/css/bootstrap.css",
+
+			ROOT + "/tapestry.css",
+
+			ROOT + "/exception-frame.css",
+
+			ROOT + "/tapestry-console.css",
+
+			ROOT + "/tree.css");
+
 			log.debug("Contributions made to 'DojoJavaScriptStack'");
 		}
 	}
@@ -136,14 +137,30 @@ public class DojoModule {
 	 * @param configuration
 	 * @param provider
 	 * @param domDojo
+	 * @param events
+	 * @param blank
+	 * @param transition
 	 */
 	@Contribute(ModuleManager.class)
 	@Match("DojoModuleManager")
-	public static void setupFoundationFramework(MappedConfiguration<String, JavaScriptModuleConfiguration> configuration, @Symbol(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER) String provider, @Path("classpath:com/azudio/tapestry/dojo/resources/t5-core-dom-dojo.js") Resource domDojo, @Path("classpath:com/azudio/tapestry/dojo/resources/events.js") Resource events) {
+	public static void setupFoundationFramework(MappedConfiguration<String, JavaScriptModuleConfiguration> configuration, @Symbol(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER) String provider, @Path("classpath:com/azudio/tapestry/dojo/resources/t5-core-dom-dojo.js") Resource domDojo, @Path("classpath:com/azudio/tapestry/dojo/resources/events.js") Resource events, @Path("classpath:com/azudio/tapestry/dojo/resources/blank.js") Resource blank, @Path("classpath:com/azudio/tapestry/dojo/resources/bootstrap/js/transition.js") Resource transition) {
 		log.debug("Provider:" + provider);
 		if (provider.equals("dojo")) {
+
 			configuration.add("t5/core/dom", new JavaScriptModuleConfiguration(domDojo));
 			configuration.add("t5/core/events", new JavaScriptModuleConfiguration(events));
+
+			configuration.override("bootstrap/transition", new JavaScriptModuleConfiguration(transition));
+
+			for (String name : new String[] { "affix", "alert", "button", "carousel", "collapse", "dropdown", "modal", "scrollspy", "tab", "tooltip", "popover" }) {
+				Resource lib = transition.forFile(name + ".js");
+				configuration.override("bootstrap/" + name, new JavaScriptModuleConfiguration(lib));
+			}
+
+			configuration.add("t5/core/datefield", new JavaScriptModuleConfiguration(blank));
+			configuration.override("t5/core/typeahead", new JavaScriptModuleConfiguration(blank));
+			configuration.override("moment", new JavaScriptModuleConfiguration(blank));
+
 			log.debug("Contributions made to the modulemanager");
 		}
 	}

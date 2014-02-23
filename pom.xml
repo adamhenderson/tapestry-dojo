@@ -8,7 +8,7 @@
 			<id>apache-staging</id>
 			<url>https://repository.apache.org/content/groups/staging/</url>
 		</repository>
-	</repositories>
+	</repositories> 
 	<dependencies>
 		<dependency>
 			<scope>provided</scope>
@@ -45,7 +45,7 @@
 
 		</plugins>
 	</build>
-	<properties>
-		<tapestry-release-version>5.4-beta-2</tapestry-release-version>
+	<properties> 
+		<tapestry-release-version>5.4-beta-3</tapestry-release-version>
 	</properties>
-</project>
+</project> 
