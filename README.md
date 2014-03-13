@@ -14,10 +14,10 @@ Things I would like to achieve are:
 3. Keep bootstrap (without all the plugins for now)
 
 ## Usage
-The project is built to become a Tapestry Library that you can eventually just put the jar on the classpath and the providor infrastructure will be there.
+The project is built to become a Tapestry Library that you can eventually just put the jar on the classpath and the provider infrastructure will be there.
 
 1. Create a normal T5.4 Web Application project
-2. In your applications AppModule set the infrastructure providor: 
+2. In your applications AppModule set the infrastructure provider: 
 
     ```java
     @Contribute(SymbolProvider.class)
@@ -99,3 +99,5 @@ All the ElementWrapper methods all work as expected.
 2. Something is attempting to load up some of the bootstrap modules that has a requirement for jQuery, since the replaced core stack does not include jQuery it is failing so would like to find that code and disable it.
 3. Would like to add support for using the dojo library from a CDN, negating the need for a download of dojo
 4. Add more configuration options
+5. Port the bootstrap module js files to dojo - need help here chaps
+6. Have a go at integrating Intern for testing.
