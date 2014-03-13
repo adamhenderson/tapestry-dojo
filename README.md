@@ -14,10 +14,10 @@ Things I would like to achieve are:
 3. Keep bootstrap (without all the plugins for now)
 
 ## Usage
-The project is built to become a Tapestry Library that you can eventually just put on the classpath and the providor infrastructure will be there.
+The project is built to become a Tapestry Library that you can eventually just put the jar on the classpath and the providor infrastructure will be there.
 
 1. Create a normal T5.4 Web Application project
-2. In you applications AppModule set the infrastructure providor: 
+2. In your applications AppModule set the infrastructure providor: 
 
     ```java
     @Contribute(SymbolProvider.class)
@@ -26,7 +26,7 @@ The project is built to become a Tapestry Library that you can eventually just p
 		configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "dojo");
 	}
     ```
-3. Download the dojotoolkit and place under [context]/js/ so you have dojo, dijit, dojox & utils all under js
+3. Download the dojotoolkit and place under [context]/js/ so you have dojo, dijit, dojox & utils all under [context]/js
 4. Create a dojoConfig.js file under [context]/js/
     ```javascript
 var dojoConfig = {
@@ -64,13 +64,15 @@ DOM events work:
 dom.onDocument("click","button",function(){...});
 ```
 
-Custom events should also now work but the event names have been overridden with the colons replaces with slashes (as they are not allowed in dojo custom event names): 
+Custom events should also now work but the event names have been overridden with a version with the colons replaced with slashes (as colons are not allowed in dojo custom event names), however code should not need to change: 
 
 ```javascript
-dom.onDocument(events.zone.refresh, function(event) {...});
+dom.onDocument(events.zone.update, function(event) {...});
 ```
 
-This is because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events "t5:zone:update", so a new events.js module is supplied with slash separated event names: "t5/zone/update".
+Because dojo treats the event name string as a special string if it contains colons which tapestry has used to namespace the events like "t5:zone:update", so a new events.js module is supplied with slash separated event names: "t5/zone/update".
+
+So long as you continue to reference the event names via the events object in your code rather than using direct strings things should still work. 
 
 ###Ajax
 ```javascript
@@ -87,11 +89,13 @@ dom.wrap("button1").on("click", null, function() {
 ```
 
 ####Zones
-Zones should now work.
+Zones should now work, though not fully tested. 
 
 ###ElementWrapper
 All the ElementWrapper methods all work as expected.
 
 ##Things Still To Do / Broken
-1. The ModuleManager still seems to want to configure RequireJS through a 'var require = {...}' object - this object could be useful for configuring dojo is the 'require' variable could be changed to 'dojoConfig' and more control given to what goes into it.
-2. Something is attempting to load up some of the bootstrap modules that has a requirement for jQuery, since the replaced core stact does not include jQuery it is failing so would like to find that code and disable it.
+1. The ModuleManager still seems to want to configure RequireJS through a 'var require = {...}' object - this object could be useful for configuring dojo is the 'require' variable could be changed to 'dojoConfig' and more control given to what goes into it. If I can find a way to override this all the config could be done in Java and maybe not require the user to create a dojoConfig.js file
+2. Something is attempting to load up some of the bootstrap modules that has a requirement for jQuery, since the replaced core stack does not include jQuery it is failing so would like to find that code and disable it.
+3. Would like to add support for using the dojo library from a CDN, negating the need for a download of dojo
+4. Add more configuration options
