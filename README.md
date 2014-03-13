@@ -5,7 +5,7 @@ An attempt to use the Dojo Toolkit as the Infrastructure Provider for Tapestry 5
 
 DISCLAIMER: The code here is to be considered very experimental and in a rough state, that said it does work to a degree.
 
-The main aim of this project is to see if it is possible to easily change the JavaScript Infrastructure Provider for Tapestry 5.4 to use the Dojo Toolkit, replacing the existing providors. Tapestry 5.4 is just still in beta so things may change.
+The main aim of this project is to see if it is possible to easily change the JavaScript Infrastructure Provider for Tapestry 5.4 to use the Dojo Toolkit, replacing the existing providers. Tapestry 5.4 is still in beta so things may change.
 
 Things I would like to achieve are:
 
