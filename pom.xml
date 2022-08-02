@@ -46,6 +46,6 @@
 		</plugins>
 	</build>
 	<properties> 
-		<tapestry-release-version>5.4-beta-3</tapestry-release-version>
+		<tapestry-release-version>5.8.2</tapestry-release-version>
 	</properties>
 </project> 
